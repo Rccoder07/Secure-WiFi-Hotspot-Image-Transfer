@@ -1,0 +1,36 @@
+  from flask import Flask
+import cv2
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    camera = cv2.VideoCapture(0)
+
+    ret, frame = camera.read()
+
+    if ret:
+        cv2.imwrite("captured.jpg", frame)
+
+    camera.release()
+
+    return """
+    <html>
+    <head>
+        <title>Secure Hotspot Demo</title>
+    </head>
+    <body style="text-align:center; font-family:Arial; margin-top:40px;">
+        <h1>Hello Rudra</h1>
+        <h2>Image Captured Successfully</h2>
+        <img src="/image" width="500">
+    </body>
+    </html>
+    """
+
+@app.route('/image')
+def image():
+    with open("captured.jpg", "rb") as f:
+        return f.read(), 200, {'Content-Type': 'image/jpeg'}
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
